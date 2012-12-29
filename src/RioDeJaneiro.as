@@ -14,10 +14,20 @@ package
 
 	
 	
-	[SWF(width='396',height='559',backgroundColor='#000000',frameRate='120')]
+	[SWF(width='396',height='559',backgroundColor='#000000',frameRate='500')]
 	
 	public class RioDeJaneiro extends Sprite
 	{
+		
+		private const COLORS:Array = [
+			0xffCF3A00,0xffD38000,0xff920000
+		];
+		
+		private const TOTAL_PARTICLES:uint = 10000;
+		private const ALPHA_VALUE:Number = 0.1;
+		
+		
+		
 		
 		
 		private var bitmapDataBase:BitmapData;
@@ -37,15 +47,19 @@ package
 			
 			bitmapDataBase.draw(new Texto());
 			
-			points = new Vector.<Point>(3000);
+			points = new Vector.<Point>(TOTAL_PARTICLES);
 			for (var i:int = 0; i < points.length; i++) {
 				points[i] = new Point(Math.random()*stage.stageWidth, Math.random()*stage.stageHeight);
-				//points[i] = new Point(Math.random()*stage.stageWidth, 0);
 			}
 			
 			current = 0;
 			
 			addEventListener(Event.ENTER_FRAME, update);
+		}
+		
+		private function get pixelColor():uint
+		{
+			return COLORS[ Math.floor(Math.random()*COLORS.length) ];
 		}
 		
 		private function update(e:Event):void
@@ -66,7 +80,7 @@ package
 				py = points[current].y;
 				
 				//se encontrar o chão ou outro pixel
-				if (bitmapDataBase.getPixel32(px, py+1) == 0xff000001 || bitmapDataBase.getPixel32(px, py+1) == 0xffffffff) {
+				if (bitmapDataBase.getPixel32(px, py+1) == 0xff000001) {
 					//nao fazer nada
 				}
 				//se abaixo estiver vazio
@@ -81,7 +95,7 @@ package
 							xDiff = 0;
 						}
 					}
-					bitmapDataBase.setPixel32(px+xDiff, py+1, 0xffffffff);
+					bitmapDataBase.setPixel32(px+xDiff, py+1, pixelColor);
 					points[current].y++;
 					points[current].x += xDiff;
 				} 
@@ -92,7 +106,7 @@ package
 						if (bitmapDataBase.getPixel32(px+1, py) == 0x00000000) {
 							//ir para a direita
 							bitmapDataBase.setPixel32(px, py, 0x00000000);
-							bitmapDataBase.setPixel32(px+1, py, 0xffffffff);
+							bitmapDataBase.setPixel32(px+1, py, pixelColor);
 							points[current].x++;
 						}
 					}
@@ -102,7 +116,7 @@ package
 						if (bitmapDataBase.getPixel32(px-1, py) == 0x00000000) {
 							//ir para a esquerda
 							bitmapDataBase.setPixel32(px, py, 0x00000000);
-							bitmapDataBase.setPixel32(px-1, py, 0xffffffff);
+							bitmapDataBase.setPixel32(px-1, py, pixelColor);
 							points[current].x--;
 						}
 					}
@@ -118,7 +132,7 @@ package
 			}
 			
 			//bitmapDataView.applyFilter(bitmapDataView, bitmapDataView.rect, new Point(), new BlurFilter(1,1,1));
-			var c:ColorTransform = new ColorTransform(1,0.8,0,0.1);
+			var c:ColorTransform = new ColorTransform(1,1,1,ALPHA_VALUE);
 			bitmapDataView.draw(bitmapDataBase, null, c);
 			
 			
